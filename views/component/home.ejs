@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+</head>
+<style>
+	table{
+		width: 100%;
+	}
+
+	ul{
+		margin: 0;
+		padding: 0;
+	}
+
+	ul li{
+		list-style-type: none;
+		float: left;
+		padding: 8px;
+		border: 1px solid;
+		margin: 4px;
+	}
+</style>
+<body>
+	<ul>
+		<% for(var i = 0; i < cars.length; i++) { %>
+			<li><a href="?car_id=<%= cars[i]['did'] %>"><%= cars[i]['vid'] %></a></li>
+		<% }%>
+	</ul>
+	<table border="1">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Mã Thẻ</th>
+				<th>Tên</th>
+				<th>Lớp</th>
+				<th>Thời gian lên</th>
+				<th>Thời gian xuống</th>
+				<th>Số lần</th>
+				<th>Trạng thái</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% if(Object.keys(alarms).length > 0) { %>
+				<% for(var id in alarms){ %>
+					<% const count = alarms[id]['alarms'].length %>
+					<% const timeStart = alarms[id]['alarms'][count-1]['eTimeStr'] %>
+					<% const timeEnd = (count > 1) ? alarms[id]['alarms'][0]['eTimeStr'] : "" %>
+					<tr>
+						<td><%= alarms[id]['id'] %></td>
+						<td><%= alarms[id]['card'] %></td>
+						<td><%= alarms[id]['name'] %></td>
+						<td><%= alarms[id]['class'] %></td>
+						<td><%= timeStart %></td>
+						<td><%= timeEnd %></td>
+						<td><%= count %></td>
+						<td></td>
+					</tr>
+				<% } %>
+			<% } else { %>
+				<tr>
+					<td colspan="8">Không có dữ liệu</td>
+				</tr>
+			<% }%>
+		</tbody>
+	</table>
+</body>
+<script>
+	const ws = new WebSocket("ws://localhost:83");
+	// ws.onopen = (event) => {
+ //  		ws.send("Here's some text that the server is urgently awaiting!");
+	// };
+	ws.onmessage = (event) => {
+		if(event.data == 'reload'){
+			location.reload()
+		}
+	}
+</script>
+</html>
