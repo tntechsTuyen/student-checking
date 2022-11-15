@@ -10,7 +10,7 @@ const service = {
 	  	}
 	  	const body = (await restUtils.promise(options)).body
 	  	if(body.result != 0){
-	  		console.error(`[GET] ${url}: ${body.message}`)
+	  		console.error(`[GET] ${url}:`)
 	  	}
 	  	return body
 	}

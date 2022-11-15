@@ -4,6 +4,7 @@
 	<meta charset="utf-8">
 	<title>Checking</title>
 	<script type="text/javascript" src="<%= host %>/plugins/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="<%= host %>/js/rest.min.js"></script>
 </head>
 <style>
 	table{
@@ -27,6 +28,14 @@
 	ul li.active{
 		background: green;
 	}
+
+	[field="address"] label{
+		display: block;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+    	max-width: 200px;
+	}
 </style>
 <body>
 	<ul>
@@ -34,6 +43,7 @@
 			<li><a href="?car_id=<%= cars[i]['did'] %>"><%= cars[i]['vid'] %></a></li>
 		<% }%>
 	</ul>
+	<p style="float: right;">Lasted update <%= endtime %></p>
 	<table border="1">
 		<thead>
 			<tr>
@@ -42,7 +52,9 @@
 				<th>Tên</th>
 				<th>Lớp</th>
 				<th>Thời gian lên</th>
+				<th>Vị trí lên</th>
 				<th>Thời gian xuống</th>
+				<th>Vị trí xuống</th>
 				<th>Số lần</th>
 				<th>Trạng thái</th>
 			</tr>
@@ -52,16 +64,20 @@
 				<% for(var id in alarms){ %>
 					<% const count = alarms[id]['alarms'].length %>
 					<% const status = (count > 2) ? "Bất thường" : "" %>
-					<% const timeStart = alarms[id]['alarms'][count-1]['eTimeStr'] %>
+					<% const timeBegin = alarms[id]['alarms'][count-1]['eTimeStr'] %>
+					<% const locationBegin = alarms[id]['alarms'][count-1]['sps'] %>
 					<% const timeEnd = (count > 1) ? alarms[id]['alarms'][0]['eTimeStr'] : "" %>
+					<% const locationEnd = (count > 1) ? alarms[id]['alarms'][0]['sps'] : "" %>
 					<tr>
 						<td><%= alarms[id]['id'] %></td>
 						<td><%= alarms[id]['card'] %></td>
 						<td><%= alarms[id]['name'] %></td>
 						<td><%= alarms[id]['class'] %></td>
-						<td><%= timeStart %></td>
+						<td><%= timeBegin %></td>
+						<td field="address" lng-lat="<%= locationBegin%>"></td>
 						<td><%= timeEnd %></td>
-						<td><%= count %></td>
+						<td field="address" lng-lat="<%= locationEnd%>"></td>
+						<td>Quẹt thẻ <%= count %> lần</td>
 						<td><%= status %></td>
 					</tr>
 				<% } %>
@@ -82,6 +98,19 @@
 		if(event.data == 'reload'){
 			location.reload()
 		}
+	}
+
+	loadLocation();
+	async function loadLocation(){
+		$(`[field="address"]`).each(async function(){
+			var lngLat = $(this).attr("lng-lat")
+			if(lngLat.trim().length > 0){
+				const lng = lngLat.split(",")[0]
+				const lat = lngLat.split(",")[1]
+				const res = await address.info(lng, lat)
+				$(this).html(`<label title="${res['data']['display_name']}">${res['data']['display_name']}</label>`);
+			}
+		})
 	}
 </script>
 </html>
