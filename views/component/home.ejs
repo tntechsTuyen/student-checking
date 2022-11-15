@@ -2,7 +2,8 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title></title>
+	<title>Checking</title>
+	<script type="text/javascript" src="<%= host %>/plugins/jquery/jquery.min.js"></script>
 </head>
 <style>
 	table{
@@ -20,6 +21,11 @@
 		padding: 8px;
 		border: 1px solid;
 		margin: 4px;
+	}
+
+
+	ul li.active{
+		background: green;
 	}
 </style>
 <body>
@@ -45,6 +51,7 @@
 			<% if(Object.keys(alarms).length > 0) { %>
 				<% for(var id in alarms){ %>
 					<% const count = alarms[id]['alarms'].length %>
+					<% const status = (count > 2) ? "Bất thường" : "" %>
 					<% const timeStart = alarms[id]['alarms'][count-1]['eTimeStr'] %>
 					<% const timeEnd = (count > 1) ? alarms[id]['alarms'][0]['eTimeStr'] : "" %>
 					<tr>
@@ -55,7 +62,7 @@
 						<td><%= timeStart %></td>
 						<td><%= timeEnd %></td>
 						<td><%= count %></td>
-						<td></td>
+						<td><%= status %></td>
 					</tr>
 				<% } %>
 			<% } else { %>
